@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-
+  <p>index</p>
 </template>
 
 <style scoped>

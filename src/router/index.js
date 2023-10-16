@@ -25,12 +25,12 @@ import { createRouter, createWebHistory } from "vue-router";
 export const constantRoutes = [
     {
         path: '/login',
-        component: () => import('@/views/login'),
+        component: () => import('@/views/login.vue'),
         hidden: true,
     },
     {
         path: '/index',
-        component: () => import('@/views/index'),
+        component: () => import('@/views/index.vue'),
     },
 ]
 
