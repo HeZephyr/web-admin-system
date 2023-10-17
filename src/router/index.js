@@ -25,12 +25,17 @@ import { createRouter, createWebHistory } from "vue-router";
 export const constantRoutes = [
     {
         path: '/login',
-        component: () => import('@/views/login.vue'),
+        component: () => import('@/views/login'),
         hidden: true,
     },
     {
+        path: '/',
+        redirect: '/index', // 添加重定向规则，将'/'重定向到'/index'
+        component: () => import('@/views/index'),
+    },
+    {
         path: '/index',
-        component: () => import('@/views/index.vue'),
+        component: () => import('@/views/index'),
     },
 ]
 

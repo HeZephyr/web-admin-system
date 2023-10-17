@@ -2,11 +2,13 @@ import { createApp } from 'vue'
 
 import Cookies from 'js-cookie'
 
+import '@/utils/permission'
+
 import ElementPlus from 'element-plus'
+import ElMessage from 'element-plus'
+import 'element-plus/dist/index.css'
 
-import '@/assets/styles/index.scss' // global css
-
-import App from './App.vue'
+import App from './App'
 import store from './store'
 import router from './router'
 

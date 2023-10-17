@@ -7,7 +7,7 @@ export function login(account, password) {
         password,
     }
     return request({
-        url: '/login',
+        url: '/user/login/manager',
         headers: {
             isToken: false
         },

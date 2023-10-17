@@ -2,9 +2,9 @@
   <div class="login">
     <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">南航南京校友会后台管理系统</h3>
-      <el-form-item prop="username">
+      <el-form-item prop="account">
         <el-input
-            v-model="loginForm.username"
+            v-model="loginForm.account"
             type="text"
             size="large"
             auto-complete="off"
@@ -37,17 +37,17 @@
       </el-form-item>
     </el-form>
     <!--  底部  -->
-    <div class="el-login-footer">
+    <div class="el-login-footer" style="margin-top: 20px; text-align: center;">
       <span>Copyright © 2023 nuaa All Rights Reserved.</span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { encrypt, decrypt } from "@/utils/jsencrypt";
 import useUserStore from '@/store/modules/user'
 import {useRoute, useRouter} from "vue-router";
 import {getCurrentInstance, ref, watch} from "vue";
+import ElMessage from "element-plus";
 
 const userStore = useUserStore()
 const route = useRoute();
@@ -55,12 +55,12 @@ const router = useRouter();
 const { proxy } = getCurrentInstance();
 
 const loginForm = ref({
-  username: "admin",
+  account: "admin",
   password: "admin123",
 });
 
 const loginRules = {
-  username: [{ required: true, trigger: "blur", message: "请输入您的账号" }],
+  account: [{ required: true, trigger: "blur", message: "请输入您的账号" }],
   password: [{ required: true, trigger: "blur", message: "请输入您的密码" }],
 };
 
@@ -75,86 +75,49 @@ watch(route, (newRoute) => {
 }, { immediate: true });
 
 function handleLogin() {
+  // 触发表单的验证
   proxy.$refs.loginRef.validate(valid => {
     if (valid) {
       loading.value = true;
       // 调用action的登录方法
       userStore.login(loginForm.value).then(() => {
         const query = route.query;
+        // 从路由查询参数中提取除 "redirect" 以外的其他参数
         const otherQueryParams = Object.keys(query).reduce((acc, cur) => {
           if (cur !== "redirect") {
             acc[cur] = query[cur];
           }
           return acc;
         }, {});
+        // 导航到指定路径，如果没有指定路径，则导航到默认路径 "/"
         router.push({ path: redirect.value || "/", query: otherQueryParams });
       }).catch(() => {
         loading.value = false;
+        console.log("登录失败,login.vue");
       });
     }
   });
 }
 </script>
-
-<style lang='scss' scoped>
+<style scoped>
 .login {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  background-size: cover;
-}
-.title {
-  margin: 0px auto 30px auto;
-  text-align: center;
-  color: #707070;
+  height: 100vh;
 }
 
 .login-form {
-  border-radius: 6px;
-  background: #ffffff;
-  width: 400px;
-  padding: 25px 25px 5px 25px;
-  .el-input {
-    height: 40px;
-    input {
-      height: 40px;
-    }
-  }
-  .input-icon {
-    height: 39px;
-    width: 14px;
-    margin-left: 0px;
-  }
+  width: 300px;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  margin-bottom: 20px;
 }
-.login-tip {
-  font-size: 13px;
+
+.title {
   text-align: center;
-  color: #bfbfbf;
-}
-.login-code {
-  width: 33%;
-  height: 40px;
-  float: right;
-  img {
-    cursor: pointer;
-    vertical-align: middle;
-  }
-}
-.el-login-footer {
-  height: 40px;
-  line-height: 40px;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  text-align: center;
-  color: #fff;
-  font-family: Arial,serif;
-  font-size: 12px;
-  letter-spacing: 1px;
-}
-.login-code-img {
-  height: 40px;
-  padding-left: 12px;
+  margin-bottom: 20px;
 }
 </style>
