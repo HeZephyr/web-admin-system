@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getToken } from "@/utils/auth";
+import { ElMessage } from "element-plus";
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 // 创建axios实例
@@ -17,5 +18,19 @@ service.interceptors.request.use(config => {
         config.headers['Authorization'] = getToken()
     }
     return config
+})
+service.interceptors.response.use(response => {
+    console.log(response)
+    // 未设置状态码则默认成功状态
+    const code = response.data.statusCode || 0
+    // 获取错误信息
+    const msg = response.data.msg
+    if (code === 1 || code === 2) {
+        // 不存在该用户或者密码错误
+        ElMessage({ message: msg, type: 'error' })
+        return Promise.reject(new Error(msg))
+    } else {
+        return Promise.resolve(response.data)
+    }
 })
 export default service

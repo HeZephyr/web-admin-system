@@ -1,4 +1,4 @@
-import { queryAllMessages }  from "@/api/system/message";
+import {handleMessage, queryAllMessages, queryAllNotReviewMessages} from "@/api/system/message";
 import {defineStore} from "pinia";
 
 const useMessageStore = defineStore(
@@ -10,10 +10,30 @@ const useMessageStore = defineStore(
             queryAllMessages() {
                 return new Promise((resolve, reject) => {
                     queryAllMessages().then(response => {
-                        const data = response.data
                         // 传回数据
-                        resolve(data)
-                        console.log("请求成功：", data)
+                        resolve(response)
+                    }).catch(error => {
+                        reject(error)
+                        console.log("请求失败：", error)
+                    })
+                })
+            },
+            queryAllNotReviewMessages() {
+                return new Promise((resolve, reject) => {
+                    queryAllNotReviewMessages().then(response => {
+                        // 传回数据
+                        resolve(response)
+                    }).catch(error => {
+                        reject(error)
+                        console.log("请求失败：", error)
+                    })
+                })
+            },
+            handleMessage(id, review) {
+                return new Promise((resolve, reject) => {
+                    handleMessage(id, review).then(response => {
+                        // 传回数据
+                        resolve()
                     }).catch(error => {
                         reject(error)
                         console.log("请求失败：", error)

@@ -93,7 +93,6 @@ function handleLogin() {
         router.push({ path: redirect.value || "/", query: otherQueryParams });
       }).catch(() => {
         loading.value = false;
-        console.log("登录失败,login.vue");
       });
     }
   });
