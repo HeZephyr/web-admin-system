@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
+/* Layout */
+import Layout from '@/layout'
 /**
  * Note: 路由配置项
  *
@@ -37,21 +39,40 @@ export const constantRoutes = [
     {
         path: '/',
         name: '/',
-        component: () => import('@/layout'),
+        component: Layout,
         children: [
             {
                 path: '/index',
                 component: () => import('@/views/index'),
                 name: 'Index',
                 meta: { title: '首页', icon: 'dashboard', affix: true }
+            },
+            {
+                path: '/view',
+                component: () => import('@/views/message/view'),
+                name: 'MessageView',
             }
         ]
     }
 ]
-
+// 动态路由，基于用户权限动态去加载
+export const dynamicRoutes = [
+    {
+        path: '/message',
+        component: Layout,
+        hidden: true,
+        children: [
+            {
+                path: '/view',
+                component: () => import('@/views/message/view'),
+                name: 'MessageView',
+            }
+        ]
+    },
+]
 const router = createRouter({
     history: createWebHistory(),
-    routes: constantRoutes,
+    routes: constantRoutes, dynamicRoutes,
     // 定义滚动行为
     scrollBehavior(to, from, savedPosition) {
         // 如果有保存的位置则恢复到原来的位置，否则回到起始位置
@@ -62,5 +83,6 @@ const router = createRouter({
         }
     },
 });
+
 
 export default router;
