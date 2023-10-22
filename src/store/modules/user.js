@@ -1,12 +1,18 @@
 import { login } from '@/api/login'
 import {defineStore} from "pinia";
 import {getToken, setToken} from "@/utils/auth";
+import defAva from '@/assets/images/profile.png'
 
 const useUserStore = defineStore(
     "user",
     {
         state: () => ({
             token: getToken(),
+            id: '',
+            name: '',
+            avatar: defAva,
+            roles: [],
+            permissions: []
         }),
         actions: {
             login(userInfo) {

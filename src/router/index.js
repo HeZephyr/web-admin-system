@@ -30,24 +30,20 @@ export const constantRoutes = [
         hidden: true,
     },
     {
+        path: "/:pathMatch(.*)*",
+        component: () => import('@/views/error/404'),
+        hidden: true
+    },
+    {
         path: '/',
         name: '/',
         component: () => import('@/layout'),
         children: [
             {
-                path: '/message',
-                name: 'Message',
-                component: () => import('@/views/message'),
-            },
-            {
-                path: '/review',
-                name: 'Review',
-                component: () => import('@/views/review'),
-            },
-            {
-                path: '/test',
-                name: 'Test',
-                component: () => import('@/views/backup'),
+                path: '/index',
+                component: () => import('@/views/index'),
+                name: 'Index',
+                meta: { title: '首页', icon: 'dashboard', affix: true }
             }
         ]
     }

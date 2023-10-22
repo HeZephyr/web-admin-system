@@ -9,7 +9,7 @@ const useSettingsStore = defineStore(
     'settings',
     {
         state: () => ({
-            title: '',
+            title: '校友会后台管理系统',
             theme: storageSetting.theme || '#409EFF',
             sideTheme: storageSetting.sideTheme || sideTheme,
             showSettings: showSettings,
