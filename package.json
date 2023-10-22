@@ -21,6 +21,10 @@
     "sass": "^1.69.3",
     "sass-loader": "^13.3.2",
     "store": "^2.0.12",
+    "unplugin-auto-import": "^0.16.6",
+    "unplugin-vue-setup-extend-plus": "^1.0.0",
+    "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-svg-icons": "^2.0.1",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5"
   },

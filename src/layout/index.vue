@@ -28,12 +28,12 @@
               </template>
               <el-menu-item @click="goToMessagePage">
                 <template #title>
-                  <el-icon><user-filled /></el-icon>查看供需信息
+                  <el-icon><list /></el-icon>查看供需信息
                 </template>
               </el-menu-item>
               <el-menu-item @click="goToReviewPage">
                 <template #title>
-                  <el-icon><user-filled /></el-icon>审核供需信息
+                  <el-icon><checked /></el-icon>审核供需信息
                 </template>
               </el-menu-item>
             </el-sub-menu>
@@ -67,12 +67,15 @@
       <el-main>
           <router-view />
       </el-main>
+      <el-footer>
+        <!--页脚固定在底部-->
+      </el-footer>
     </el-container>
   </el-container>
 </template>
 
 <script lang="ts" setup>
-import {HomeFilled, UserFilled, Message, Setting, Lock} from '@element-plus/icons-vue'
+import {HomeFilled, UserFilled, Message, Setting, Lock, List, Checked} from '@element-plus/icons-vue'
 import router from "@/router";
 function goToMessagePage() {
   console.log("test")

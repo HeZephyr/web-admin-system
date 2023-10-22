@@ -4,9 +4,9 @@
   </div>
   <!--利用el-table展示供需信息-->
   <div class="supply-demand-list">
-    <el-table :data="filterTableData" style="width: 100%">
+    <el-table :data="filterTableData" style="width: 100%; height: 400%" :max-height="400">
       <el-table-column label="ID" prop="id" />
-      <el-table-column label="title" prop="title" />
+      <el-table-column label="标题" prop="title" />
       <el-table-column prop="content" label="内容"></el-table-column>
       <el-table-column prop="date" label="日期"></el-table-column>
       <el-table-column prop="state" label="审核状态">
@@ -56,7 +56,7 @@ onMounted(() => {
     supplyDemandList.value = response.rst.map((item) => {
       return {
         ...item,
-        date: format(new Date(item.date), 'yyyy-MM-dd HH:mm:ss'),
+        date: format(new Date(item.date), 'yyyy-MM-dd'),
       }
     });
     console.log("index.vue", supplyDemandList.value);
