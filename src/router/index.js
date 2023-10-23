@@ -48,8 +48,8 @@ export const constantRoutes = [
                 meta: { title: '首页', icon: 'dashboard', affix: true }
             },
             {
-                path: '/view',
-                component: () => import('@/views/message/view'),
+                path: '/message',
+                component: () => import('@/views/message/message'),
                 name: 'MessageView',
             }
         ]
@@ -64,7 +64,7 @@ export const dynamicRoutes = [
         children: [
             {
                 path: '/view',
-                component: () => import('@/views/message/view'),
+                component: () => import('@/views/message/message.vue'),
                 name: 'MessageView',
             }
         ]

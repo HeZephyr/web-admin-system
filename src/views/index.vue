@@ -2,6 +2,10 @@
   <div class="app-container home">
     <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :md="12" :lg="8">
+        <el-calendar v-model="date">
+        </el-calendar>
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="12" :lg="8">
         <el-card class="update-log">
           <template v-slot:header>
             <div class="clearfix">
@@ -15,7 +19,11 @@
 </template>
 
 <script setup name="Index">
-const version = ref('3.8.6')
+import calendar from '@/utils/calendar.js'
+
+
+import { ref } from 'vue'
+const date = ref(new Date())
 
 function goTarget(url) {
   window.open(url, '__blank')

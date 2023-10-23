@@ -25,7 +25,7 @@
               v-for="dict in statesText"
               :key="dict.value"
               :label="dict.label"
-              :value="dict.value"
+              :value="dict.label"
           />
         </el-select>
       </el-form-item>
@@ -42,7 +42,6 @@
             plain
             icon="Plus"
             @click="handleAdd"
-            v-hasPermi="['system:post:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -52,7 +51,6 @@
             icon="Edit"
             :disabled="single"
             @click="handleUpdate"
-            v-hasPermi="['system:post:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -62,7 +60,6 @@
             icon="Delete"
             :disabled="multiple"
             @click="handleDelete"
-            v-hasPermi="['system:post:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -71,7 +68,6 @@
             plain
             icon="Download"
             @click="handleExport"
-            v-hasPermi="['system:post:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
@@ -84,14 +80,19 @@
       <el-table-column label="申请日期" align="center" prop="date">
       </el-table-column>
       <el-table-column label="审核状态" align="center" prop="state">
-
+        <template #default="scope">
+          <el-tag :type="statesText[scope.row.state].elTagType" :class="statesText[scope.row.state].elTagClass">
+            {{ statesText[scope.row.state].label }}
+          </el-tag>
+        </template>
       </el-table-column>
       <el-table-column label="审核管理员ID" align="center" prop="announcerId" width="180">
       </el-table-column>
-      <el-table-column label="操作" width="180" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="220" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:post:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:post:remove']">删除</el-button>
+          <el-button link type="primary" icon="Flag" @click="handleReview(scope.row)" >审核</el-button>
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" >修改</el-button>
+          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -103,6 +104,30 @@
         v-model:limit="queryParams.pageSize"
         @pagination="getList"
     />
+    <!-- 审核对话框 -->
+    <el-dialog :title="title" v-model="open" width="500px" append-to-body center>
+      <el-form ref="messageRef" :model="form"  label-width="80px">
+        <el-form-item label="标题" prop="title">
+          <el-input v-model="form.title" readonly="readonly" />
+        </el-form-item>
+        <el-form-item type="textarea" label="内容" prop="postCode">
+          <el-input v-model="form.content" readonly="readonly"/>
+        </el-form-item>
+        <el-form-item label="申请日期" prop="date">
+          <el-input v-model="form.date" readonly="readonly" />
+        </el-form-item>
+        <el-form-item label="审核意见" prop="remark">
+          <el-input v-model="form.review" type="textarea" placeholder="请输入审核意见" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="success" @click="acceptReview">通 过</el-button>
+          <el-button type="danger" @click="rejectReview">拒 绝</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -111,13 +136,12 @@ import {getCurrentInstance} from "vue";
 
 const { proxy } = getCurrentInstance();
 import useMessageStore from "@/store/modules/message.js";
-import {parseTime} from "element-plus/es/components/time-select/src/utils";
 const messageStore = useMessageStore(); // 创建 useMessageStore 实例
 
 const statesText = [
-  {type: 0, value: "未审核"},
-  {type: 1, value: "审核通过"},
-  {type: 2, value: "审核未通过"}
+  {value: 0, label: "未审核", elTagType: "warning", elTagClass: "el-tag--danger"},
+  {value: 1, label: "审核通过", elTagType: "success", elTagClass: "el-tag--success"},
+  {value: 2, label: "审核未通过", elTagType: "danger", elTagClass: "el-tag--warning"}
 ]
 
 const messageList = ref([]);
@@ -146,9 +170,9 @@ const data = reactive({
   }
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form } = toRefs(data);
 
-/** 查询岗位列表 */
+/** 查询供需信息列表 */
 function getList() {
   loading.value = true;
   messageStore.queryAllMessages().then((response) => {
@@ -161,6 +185,11 @@ function getList() {
     console.log(error)
   });
 }
+/** 取消按钮 */
+function cancel() {
+  open.value = false;
+  reset();
+}
 /** 表单重置 */
 function reset() {
   form.value = {
@@ -171,7 +200,7 @@ function reset() {
     status: undefined,
     announcerId: undefined
   };
-  proxy.resetForm("postRef");
+  proxy.resetForm("messageRef");
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -195,13 +224,46 @@ function handleAdd() {
   open.value = true;
   title.value = "添加岗位";
 }
+/** 审核按钮操作 */
+function handleReview(row) {
+  reset()
+  open.value = true;
+  title.value = "审核供需信息";
+  form.value = row;
+}
+function acceptReview() {
+  messageStore.handleMessage(form.value.id, 1).then((response) => {
+    // 修改数据成功，刷新表单
+    getList();
+    open.value = false;
+    reset();
+  }).catch((error) => {
+    console.log(error)
+  });
+}
+function rejectReview() {
+  messageStore.handleMessage(form.value.id, 2).then((response) => {
+    // 修改数据成功，刷新表单
+    getList();
+    open.value = false;
+    reset();
+  }).catch((error) => {
+    console.log(error)
+  });
+}
 /** 修改按钮操作 */
 function handleUpdate(row) {
 
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-
+  const id = row.id || ids.value;
+  proxy.$modal.confirm('是否确认删除岗位编号为"' + id + '"的数据项？').then(function() {
+    console.log("删除")
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess("删除成功");
+  }).catch(() => {});
 }
 /** 导出按钮操作 */
 function handleExport() {
